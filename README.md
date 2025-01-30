@@ -1,1 +1,3 @@
-# project_euler_solutions
+# Ritchie's Project Euler Solutions
+
+https://projecteuler.net/
