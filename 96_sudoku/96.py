@@ -1,5 +1,5 @@
 line_list = []
-txt_file = open("p096_sudoku.txt", "r")
+txt_file = open("96_sudoku/p096_sudoku.txt", "r")
 
 # open and add each line into line_list
 for line in txt_file:
@@ -18,12 +18,14 @@ for line in line_list:
         puzzle_number += 1
 
         grid_dict[puzzle_number] = []
-    else:
-        grid_dict[puzzle_number][line_count] = []
-        for char in line:
-            grid_dict[puzzle_number][line_count].append(char)
-            line_count += 1
 
         line_count = 0
-
-print(grid_dict[1])
+    else:
+        grid_dict[puzzle_number].append([])
+        for char in line:
+            grid_dict[puzzle_number][line_count].append(char)
+        
+        line_count += 1
+    
+for i in range(len(grid_dict[1])):
+    print(grid_dict[1][i])
