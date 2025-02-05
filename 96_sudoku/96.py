@@ -1,54 +1,51 @@
 from typing import List
 
-class Sudoku:
-    def __init__(self, number, raw_puzzle):
-        self.number = number
-        self.puzzle = self.get_puzzle(raw_puzzle)
-        self.puzzle_readable = self.get_current_puzzle_readable()
+class Square:
+    def __init__(self, x: int, y: int, number: int):
+        self.x = x
+        self.y = y
+        self.boxx = int(x/3)
+        self.boxy = int(y/3) 
+        self.num = number
+        self.candidates = self.get_candidates(number)
+        self.solved = False
+        if self.num != 0:
+            self.solved = True
 
-    class Square:
-        def __init__(self, x, y, num):
-            self.x = x
-            self.y = y
-            self.boxx = int(x/3)
-            self.boxy = int(y/3) 
-            self.num = num
-            self.candidates = self.get_candidates(num)
-            self.solved = False
-            if self.num != 0:
-                self.solved = True
-
-        def is_solved(self):
-            if self.num != 0:
+    def is_solved(self) -> bool:
+        if self.num != 0:
+            return True
+        else:
+            number_of_candidates = 0
+            for thing in self.candidates:
+                if thing:
+                    number_of_candidates += 1
+            if number_of_candidates == 1:
+                for i, cand_bool in enumerate(self.candidates):
+                    if cand_bool:
+                        self.num = i
                 return True
             else:
-                number_of_candidates = 0
-                for thing in self.candidates:
-                    if thing:
-                        number_of_candidates += 1
-                if number_of_candidates == 1:
-                    for i, cand_bool in enumerate(self.candidates):
-                        if cand_bool:
-                            self.num = i
-                    return True
-                else:
-                    return False
+                return False
 
-        def get_candidates(self, number):
-            if number == 0:
-                return [False, True, True, True, True, True, True, True, True, True]
-            else:
-                return 
+    def get_candidates(self, number: int):
+        if number == 0:
+            return [False, True, True, True, True, True, True, True, True, True]
+        else:
+            return 
 
-    def get_puzzle(self, raw):
+class Sudoku:
+    def __init__(self, number: int, raw_puzzle: List[List[int]]):
+        self.number = number
+        self.puzzle = self.get_puzzle(raw_puzzle)
+        self.puzzle_readable = self.get_current_puzzle_readable()    
+
+    def get_puzzle(self, raw: List[List[int]]) -> List[List[Square]]:
         puzzle = []
         for i, row in enumerate(raw):
             puzzle.append([])
             for j, num in enumerate(row):
-                Square = self.Square(j,i,num)
-                puzzle[i].append(Square)
-                
-
+                puzzle[i].append(Square(j,i,num))
         return puzzle
 
     def eliminate_candidates(self, sq: Square):
