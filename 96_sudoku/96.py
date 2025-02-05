@@ -4,6 +4,7 @@ class Sudoku:
     def __init__(self, number, raw_puzzle):
         self.number = number
         self.puzzle = self.get_puzzle(raw_puzzle)
+        self.puzzle_readable = self.get_current_puzzle_readable()
 
     class Square:
         def __init__(self, x, y, num):
@@ -16,23 +17,20 @@ class Sudoku:
             self.solved = False
             if self.num != 0:
                 self.solved = True
-                print("got one")
 
         def is_solved(self):
             if self.num != 0:
                 return True
-                print("got one")
             else:
                 number_of_candidates = 0
-                candidate_index = 0
-                for i, cand_bool in enumerate(self.candidates):
-                    if cand_bool:
+                for thing in self.candidates:
+                    if thing:
                         number_of_candidates += 1
-                        candidate_index = i
                 if number_of_candidates == 1:
-                    self.num = i
+                    for i, cand_bool in enumerate(self.candidates):
+                        if cand_bool:
+                            self.num = i
                     return True
-                    print("got one")
                 else:
                     return False
 
@@ -60,22 +58,28 @@ class Sudoku:
                 if rowmate.num != 0:
                     sq.candidates[rowmate.num] = False
                     sq.is_solved()
+                    self.puzzle_readable = self.get_current_puzzle_readable()
                     if sq.num != 0:
+                        self.puzzle_readable = self.get_current_puzzle_readable()
                         break
             # column
             for row in self.puzzle:
                 if row[sq.x].num != 0:
                     sq.candidates[row[sq.x].num] = False
                     sq.is_solved()
+                    self.puzzle_readable = self.get_current_puzzle_readable()
                     if sq.num != 0:
+                        self.puzzle_readable = self.get_current_puzzle_readable()
                         break
             # square
-            for x in range(sq.boxx * 3, (sq.boxx * 3) + 2):
-                for y in range(sq.boxy * 3, (sq.boxy * 3) + 2):
+            for x in range(sq.boxx * 3, (sq.boxx * 3) + 3):
+                for y in range(sq.boxy * 3, (sq.boxy * 3) + 3):
                     if self.puzzle[y][x].num != 0:
                         sq.candidates[self.puzzle[y][x].num] = False
                         sq.is_solved()
+                        self.puzzle_readable = self.get_current_puzzle_readable()
                         if sq.num != 0:
+                            self.puzzle_readable = self.get_current_puzzle_readable()
                             break
                 
     def solve(self):
@@ -93,11 +97,33 @@ class Sudoku:
                     return True
                 
     def print_solved(self):
-        if self.puzzle_solved():
-            for row in self.puzzle:
-                for x in row:
-                    print(x.num, end=" ")
-                print()
+        rowcount = 0
+        colcount = 0
+        # if self.puzzle_solved():
+        for row in self.puzzle_readable:
+            rowcount += 1
+            if rowcount % 3 == 1:
+                print("- - - - - - - - -")
+            for x in row:
+                colcount += 1
+                if colcount % 3 == 1:
+                    print("|", end="")
+                print(x, end=" ")
+            print()
+        print()
+        print()
+
+    def get_current_puzzle_readable(self):
+        puz = []
+        for i, row in enumerate(self.puzzle):
+            puz.append([])
+            for sqa in row:
+                puz[i].append(sqa.num)
+
+        return puz
+
+
+
 
 
 
@@ -120,6 +146,8 @@ line_count = 0
 for line in line_list:
     if "Grid 01" in line:
         sudoku_number += 1
+        print("Grid ", sudoku_number)
+        line_count = 0
 
     elif "Grid" in line:
         sudoku = Sudoku(sudoku_number, puzzle_raw)
@@ -129,9 +157,12 @@ for line in line_list:
         #do stuff here!
 
         # use the following line once itterating
-        #sudoku_number += 1
-
+        sudoku_number += 1
+        print("Grid ", sudoku_number)
+        puzzle_raw = []
+        line_count = 0
     else:
+        
         puzzle_raw.append([])
         for char in line:
             puzzle_raw[line_count].append(int(char))
