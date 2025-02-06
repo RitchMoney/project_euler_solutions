@@ -38,7 +38,8 @@ class Sudoku:
     def __init__(self, number: int, raw_puzzle: List[List[int]]):
         self.number = number
         self.puzzle = self.get_puzzle(raw_puzzle)
-        self.puzzle_readable = self.get_current_puzzle_readable()    
+        self.puzzle_readable = self.get_current_puzzle_readable()
+        self.puzzle_is_solved = False
 
     def get_puzzle(self, raw: List[List[int]]) -> List[List[Square]]:
         puzzle = []
@@ -78,20 +79,23 @@ class Sudoku:
                         if sq.num != 0:
                             self.puzzle_readable = self.get_current_puzzle_readable()
                             break
+
+            
                 
     def solve(self):
-        while not self.puzzle_solved():
+        while self.puzzle_is_solved == False:
             for row in self.puzzle:
                 for x in row:
                     self.eliminate_candidates(x)
+                self.puzzle_solved()
 
     def puzzle_solved(self):
         for row in self.puzzle:
             for x in row:
                 if x.num == 0:
-                    return False
-                else:
-                    return True
+                    return
+                           
+        self.puzzle_is_solved = True
                 
     def print_solved(self):
         rowcount = 0
@@ -139,6 +143,7 @@ txt_file.close()
 sudoku_number = 0
 puzzle_raw = []
 line_count = 0
+sudoku_list = []
 
 for line in line_list:
     if "Grid 01" in line:
@@ -147,13 +152,10 @@ for line in line_list:
         line_count = 0
 
     elif "Grid" in line:
-        sudoku = Sudoku(sudoku_number, puzzle_raw)
-        sudoku.solve()
-        sudoku.print_solved()
+        sudoku_list.append(Sudoku(sudoku_number, puzzle_raw))
+        sudoku_list[sudoku_number - 1].solve()
+        sudoku_list[sudoku_number - 1].print_solved()
 
-        #do stuff here!
-
-        # use the following line once itterating
         sudoku_number += 1
         print("Grid ", sudoku_number)
         puzzle_raw = []
